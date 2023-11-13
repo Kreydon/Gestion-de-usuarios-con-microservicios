@@ -11,11 +11,8 @@ services:
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
       MYSQL_DATABASE: gestion_usuarios
-<<<<<<< HEAD
     networks:
       - red-gestion
-=======
->>>>>>> f72dbf76c8107ed490647e78a5030dd7ee99f2dd
 
   adminer:
     image: adminer
@@ -24,10 +21,5 @@ services:
       - 8080:8080
 
   networks:
-<<<<<<< HEAD
     red-gestion:
       driver: bridge
-=======
-    my-network:
-      driver: bridge
->>>>>>> f72dbf76c8107ed490647e78a5030dd7ee99f2dd
