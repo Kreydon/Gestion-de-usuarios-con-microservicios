@@ -10,9 +10,16 @@ services:
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_DATABASE: gestion_usuarios
+    networks:
+      - red-gestion
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
+
+  networks:
+    red-gestion:
+      driver: bridge
