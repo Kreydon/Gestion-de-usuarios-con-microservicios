@@ -1,0 +1,105 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('../fonts/icomoon.eot?th3vam');
+  src:  url('../fonts/icomoon.eot?th3vam#iefix') format('embedded-opentype'),
+    url('../fonts/icomoon.ttf?th3vam') format('truetype'),
+    url('../fonts/icomoon.woff?th3vam') format('woff'),
+    url('../fonts/icomoon.svg?th3vam#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+html
+    font-family: 'Shantell Sans', cursive
+    font-weight: 100
+    font-size: 15px
+    body
+        margin-top: 50px
+        background-color: #000
+        header
+            h1
+                color: white
+                text-align: center
+        main
+            .flex-container
+                width: 70%
+                display: flex
+                flex-flow: column wrap
+                background-color: #333
+                margin: 100px auto
+                border: 20px solid #000
+                outline: 4px solid #1c5
+                button
+                    width: 16.6rem
+                    height: 5.3rem
+                    font-size: 20px
+                    border: 3px solid #1c5
+                    background-color: transparent
+                    color: white
+                    span::before
+                        font-family: "icomoon"
+                        color: white
+                        margin: .4rem 0 0 .4rem 
+                button:hover
+                    background: linear-gradient(to bottom, transparent, #444)
+                    outline: none
+                    border: 3px solid #5f9
+                    cursor: pointer
+                .arriba
+                    display: flex
+                    justify-content: space-between
+                    margin: 20px 20px 60px 20px
+                    #create
+                        span::before
+                            content: "\e973"
+                    #read
+                        span::before
+                            content: "\e986"
+                .abajo
+                    display: flex
+                    justify-content: space-between
+                    margin: 60px 20px 20px 20px
+                    #update
+                        span::before
+                            content: "\e982"
+                    #delete
+                        span::before
+                            content: "\e974"
+                .popup
+                    width: 50rem
+                    display: none
+                    position: fixed
+                    flex-wrap: wrap
+                    padding: 20px
+                    top: 50%
+                    left: 50%
+                    background-color: #333
+                    border: 20px solid #000
+                    outline: 4px solid #1c5
+                    transform: translate(-50%, -50%)
+                    color: white
+                    p
+                        font-size: 20px
+                    #userID
+                        height: 2rem
+                        margin: 5px
+                        padding: 7px
+                        border: none
+                        border-bottom: 3px solid #1c5
+                        background-color: transparent
+                        color: white
+                    #userID:focus
+                        background: linear-gradient(to bottom, transparent, #444)
+                        outline: none
+                        border-bottom: 3px solid #5f9
+                    #accion
+                        margin: .7rem .3rem 0 0
+                        height: 2.5rem
+                        flex-grow: 6
+                    #cerrar
+                        display: flex
+                        margin: .7rem 0 0 .3rem
+                        height: 2.5rem
+                        justify-content: center
+                        align-items: center

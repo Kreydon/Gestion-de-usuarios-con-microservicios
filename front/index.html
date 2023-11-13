@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="src/assets/css/normalize.css">
+    <link rel="stylesheet" href="src/assets/css/index.css">
+    <link rel="icon" href="public/proxy-image.png" type="image/png">
+    <title>Aplicaci&oacute;n de Gesti&oacute;n de Datoss</title>
+</head>
+
+<body>
+
+    <header>
+        <h1>Aplicación de Gestión de Datos</h1>
+    </header>
+
+    <main>
+        <div class="flex-container">
+            <div class="arriba">
+                <button id="create">Crear nuevo usuario <span></span></button>
+                <button id="read">Consultar usuario <span></span></button>
+            </div>
+            <div class="abajo">
+                <button id="update">Actualizar usuario <span></span></button>
+                <button id="delete">Eliminar usuario <span></span></button>
+            </div>
+            <div id="popup" class="popup">
+                <p></p>
+                <input type="text" id="userID" pattern="[0-9]*">
+                <button id="accion"></button>
+                <button id="cerrar">Cerrar</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Agrega contenido del pie de página si es necesario -->
+    </footer>
+    <script type="module" src="src/assets/js/index.js"></script>
+</body>
+
+</html>
