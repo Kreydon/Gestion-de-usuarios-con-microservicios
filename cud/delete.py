@@ -12,8 +12,9 @@ class DATABASE:
         print("😃")
 
     def eliminar_usuarios(self):
-        query = f"""DELETE FROM usuarios
-                    WHERE noDocumento = 12345"""
+        query = f"""UPDATE usuarios
+                    SET estado = 'P'
+                    WHERE (noDocumento = 12345) and (estado = 'A');"""
         try:
             self.cursor.execute(query)
             self.connection.commit()
