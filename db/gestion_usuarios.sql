@@ -37,9 +37,7 @@ CREATE TABLE `usuarios` (
   `estado` enum('A','P') NOT NULL,
   `foto` longblob,
   PRIMARY KEY (`subrogada`),
-  CONSTRAINT `usuarios_chk_1` CHECK (regexp_like(`fechaNacimiento`,_utf8mb4'^[0-9]{2}/[0-9]{2}/[0-9]{4}$')),
   CONSTRAINT `usuarios_chk_2` CHECK (regexp_like(`correoElectronico`,_utf8mb4'^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$')),
-  CONSTRAINT `usuarios_chk_3` CHECK (regexp_like(`fechaActualizacion`,_utf8mb4'^[0-9]{2}/[0-9]{2}/[0-9]{4}$'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
