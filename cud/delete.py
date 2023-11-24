@@ -25,7 +25,7 @@ class DATABASE:
     def close(self):
         self.connection.close()
 
-response = requests.get("URL_DE_TU_API")
+response = requests.get("URL")
 json_data = response.json()
 
 database = DATABASE()
