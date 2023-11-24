@@ -8,7 +8,7 @@ class DATABASE:
             host="localhost", user="root", password="14062003", db="gestion_usuarios"
         )
         self.cursor = self.connection.cursor()
-        print("Conexión establecida 😃")
+        print("😃")
 
     def crear_usuarios(self, usuario):
         query = f"""INSERT INTO usuarios 
