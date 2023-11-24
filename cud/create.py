@@ -11,17 +11,37 @@ class DATABASE:
 
         print("😃")
 
-    def crear_usuarios(self):
-        query = f"""INSERT INTO usuarios 
-                    (tipoDocumento, noDocumento, firstName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado)
+    def crear_usuarios(self, user_data):
+        query = """INSERT INTO usuarios 
+                    (tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado, foto)
                     VALUES
-                    ('Cédula', 12345, 'Juan', 'Perez', '1990-05-29', 'Masculino', 'juanperez@email.com', '3001234567', '2004-02-14', 'A');"""
-        try:
-            self.cursor.execute(query)
-            self.connection.commit()
+                    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
+        values = (
+            user_data["tipoDocumento"],
+            user_data["noDocumento"],
+            user_data["firstName"],
+            user_data.get("secondName", None),
+            user_data["apellidos"],
+            user_data["fechaNacimiento"],
+            user_data["genero"],
+            user_data["correoElectronico"],
+            user_data["celular"],
+            user_data["fechaActualizacion"],
+            user_data["estado"],
+            user_data.get("foto", None)
+        )
+
+        try:
+            self.cursor.execute(query, values)
+            self.connection.commit()
+            print("Usuario creado exitosamente")
         except Exception as e:
+            print(f"Error al crear usuario: {e}")
+            self.connection.rollback()
             raise
+        finally:
+            self.close()
 
     def close(self):
         self.connection.close()
