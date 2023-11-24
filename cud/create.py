@@ -1,54 +1,35 @@
 import pymysql
-
+import requests
+import json
 
 class DATABASE:
     def __init__(self):
         self.connection = pymysql.connect(
             host="localhost", user="root", password="14062003", db="gestion_usuarios"
         )
-
         self.cursor = self.connection.cursor()
+        print("Conexión establecida 😃")
 
-        print("😃")
-
-    def crear_usuarios(self, user_data):
-        query = """INSERT INTO usuarios 
-                    (tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado, foto)
+    def crear_usuarios(self, usuario):
+        query = f"""INSERT INTO usuarios 
+                    (tipoDocumento, noDocumento, firstName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado)
                     VALUES
-                    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-
-        values = (
-            user_data["tipoDocumento"],
-            user_data["noDocumento"],
-            user_data["firstName"],
-            user_data.get("secondName", None),
-            user_data["apellidos"],
-            user_data["fechaNacimiento"],
-            user_data["genero"],
-            user_data["correoElectronico"],
-            user_data["celular"],
-            user_data["fechaActualizacion"],
-            user_data["estado"],
-            user_data.get("foto", None)
-        )
-
+                    ('{usuario['tipoDocumento']}', {usuario['noDocumento']}, '{usuario['firstName']}', '{usuario['apellidos']}', '{usuario['fechaNacimiento']}', '{usuario['genero']}', '{usuario['correoElectronico']}', '{usuario['celular']}', '{usuario['fechaActualizacion']}', '{usuario['estado']}');"""
         try:
-            self.cursor.execute(query, values)
+            self.cursor.execute(query)
             self.connection.commit()
-            print("Usuario creado exitosamente")
         except Exception as e:
-            print(f"Error al crear usuario: {e}")
+            print(f"Error: {e}")
             self.connection.rollback()
             raise
-        finally:
-            self.close()
 
     def close(self):
         self.connection.close()
 
+response = requests.get("URL")
+json_data = response.json()
 
 database = DATABASE()
-
-database.crear_usuarios()
-
+for usuario in json_data['usuarios']:
+    database.crear_usuarios(usuario)
 database.close()
