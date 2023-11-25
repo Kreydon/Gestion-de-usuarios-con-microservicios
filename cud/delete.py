@@ -1,38 +1,75 @@
-import json
+import mysql.connector
+from flask import Flask, jsonify, request
 
-import pymysql
-import requests
+delete = Flask(__name__)
+
+user_db_config = {
+    "host": "localhost",
+    "user": "root",
+    "password": "14062003",
+    "database": "gestion_usuarios",
+}
+
+log_db_config = {
+    "host": "localhost",
+    "user": "root",
+    "password": "14062003",
+    "database": "gestion_usuarios",
+}
 
 
-class DATABASE:
-    def __init__(self):
-        self.connection = pymysql.connect(
-            host="localhost", user="root", password="14062003", db="gestion_usuarios"
+def get_user_db_connection():
+    return mysql.connector.connect(**user_db_config)
+
+
+def get_log_db_connection():
+    return mysql.connector.connect(**log_db_config)
+
+
+@app.route("/users/<int:user_id>", methods=["DELETE"])
+def delete_user(user_id):
+    try:
+        connection = get_user_db_connection()
+        cursor = connection.cursor()
+
+        data = request.get_json()
+
+        cursor.execute(
+            "UPDATE usuarios SET estado = 'P' WHERE noDocumento = %s AND estado = 'A'",
+            (data["noDocumento"],),
         )
-        self.cursor = self.connection.cursor()
-        print("😃")
 
-    def eliminar_usuarios(self, noDocumento):
-        query = f"""UPDATE usuarios
-                    SET estado = 'P'
-                    WHERE noDocumento = {noDocumento}
-                    AND estado = "A";"""
-        try:
-            self.cursor.execute(query)
-            self.connection.commit()
-        except Exception as e:
-            print(f"Error: {e}")
-            self.connection.rollback()
-            raise
-
-    def close(self):
-        self.connection.close()
+        connection.commit()
+        return jsonify({"mensaje": "Usuario eliminado correctamente"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    finally:
+        cursor.close()
+        connection.close()
 
 
-response = requests.get("URL")
-json_data = response.json()
+@app.route("/logs", methods=["POST"])
+def add_log():
+    try:
+        connection = get_log_db_connection()
+        cursor = connection.cursor()
 
-database = DATABASE()
-for usuario in json_data["usuarios"]:
-    database.eliminar_usuarios(usuario["noDocumento"])
-database.close()
+        data = request.get_json()
+
+        query = "INSERT INTO logz (noDocumento, usuario, accion, fechaAccion) VALUES (%s, %s, %s, %s)"
+        cursor.execute(
+            query,
+            (data["noDocumento"], data["usuario"], data["accion"], data["fechaAccion"]),
+        )
+
+        connection.commit()
+        return jsonify({"mensaje": "Entrada de log agregada correctamente"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    finally:
+        cursor.close()
+        connection.close()
+
+
+if __name__ == "__main__":
+    delete.run(debug=True)

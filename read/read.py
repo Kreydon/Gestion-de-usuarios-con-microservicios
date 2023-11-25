@@ -1,32 +1,75 @@
-import pymysql
+import mysql.connector
+from flask import Flask, jsonify, request
 
-class DATABASE:
-    def __init__(self):
-        self.connection = pymysql.connect(
-            host="localhost", user="root", password="14062003", db="gestion_usuarios"
-        )
-        self.cursor = self.connection.cursor()
-        print("😃")
+read = Flask(__name__)
 
-    def ver_usuarios(self):
+user_db_config = {
+    "host": "localhost",
+    "user": "root",
+    "password": "14062003",
+    "database": "gestion_usuarios",
+}
+
+log_db_config = {
+    "host": "localhost",
+    "user": "root",
+    "password": "14062003",
+    "database": "gestion_usuarios",
+}
+
+
+def get_user_db_connection():
+    return mysql.connector.connect(**user_db_config)
+
+
+def get_log_db_connection():
+    return mysql.connector.connect(**log_db_config)
+
+
+@app.route("/usuarios/<int:id_usuario>", methods=["GET"])
+def obtener_usuario_por_id(id_usuario):
+    try:
+        connection = get_user_db_connection()
+        cursor = connection.cursor(dictionary=True)
         query = """SELECT tipoDocumento, noDocumento, firstName, apellidos, fechaNacimiento
                    FROM usuarios
-                   WHERE estado = 'A';"""
-        try:
-            self.cursor.execute(query)
-            infos = self.cursor.fetchall()
+                   WHERE noDocumento=%s AND estado = 'A';"""
+        cursor.execute(query, (id_usuario,))
+        usuario = cursor.fetchone()
 
-            for info in infos:
-                print(
-                    f"Tipo de documento: {info[0]}\nNo de documento: {info[1]}\nNombre: {info[2]}\nApellidos: {info[3]}\nFecha de nacimiento: {info[4]}"
-                )
-        except Exception as e:
-            print(f"Error: {e}")
-            raise
+        if usuario:
+            return jsonify(usuario)
+        else:
+            return jsonify({"mensaje": "Usuario no encontrado"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    finally:
+        cursor.close()
+        connection.close()
 
-    def close(self):
-        self.connection.close()
 
-database = DATABASE()
-database.ver_usuarios()
-database.close()
+@app.route("/logs", methods=["POST"])
+def add_log():
+    try:
+        connection = get_log_db_connection()
+        cursor = connection.cursor()
+
+        data = request.get_json()
+
+        query = "INSERT INTO logz (noDocumento, usuario, accion, fechaAccion) VALUES (%s, %s, %s, %s)"
+        cursor.execute(
+            query,
+            (data["noDocumento"], data["usuario"], data["accion"], data["fechaAccion"]),
+        )
+
+        connection.commit()
+        return jsonify({"mensaje": "Entrada de log agregada correctamente"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    finally:
+        cursor.close()
+        connection.close()
+
+
+if __name__ == "__main__":
+    read.run(debug=True)

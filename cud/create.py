@@ -1,35 +1,98 @@
-import pymysql
-import requests
-import json
+import mysql.connector
+from flask import Flask, jsonify, request
 
-class DATABASE:
-    def __init__(self):
-        self.connection = pymysql.connect(
-            host="localhost", user="root", password="14062003", db="gestion_usuarios"
+create = Flask(__name__)
+
+user_db_config = {
+    "host": "localhost",
+    "user": "root",
+    "password": "14062003",
+    "database": "gestion_usuarios",
+}
+
+log_db_config = {
+    "host": "localhost",
+    "user": "root",
+    "password": "14062003",
+    "database": "gestion_usuarios",
+}
+
+
+def get_user_db_connection():
+    return mysql.connector.connect(**user_db_config)
+
+
+def get_log_db_connection():
+    return mysql.connector.connect(**log_db_config)
+
+
+@app.route("/users", methods=["POST"])
+def agregar_usuario():
+    try:
+        connection = get_user_db_connection()
+        cursor = connection.cursor()
+
+        datos = request.get_json()
+
+        cursor.execute(
+            "SELECT * FROM usuarios WHERE noDocumento = %s AND estado = 'A'",
+            (datos["noDocumento"],),
         )
-        self.cursor = self.connection.cursor()
-        print("😃")
+        existing_user = cursor.fetchone()
 
-    def crear_usuarios(self, usuario):
-        query = f"""INSERT INTO usuarios 
-                    (tipoDocumento, noDocumento, firstName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado)
-                    VALUES
-                    ('{usuario['tipoDocumento']}', {usuario['noDocumento']}, '{usuario['firstName']}', '{usuario['apellidos']}', '{usuario['fechaNacimiento']}', '{usuario['genero']}', '{usuario['correoElectronico']}', '{usuario['celular']}', '{usuario['fechaActualizacion']}', '{usuario['estado']}');"""
-        try:
-            self.cursor.execute(query)
-            self.connection.commit()
-        except Exception as e:
-            print(f"Error: {e}")
-            self.connection.rollback()
-            raise
+        if existing_user:
+            return jsonify({"error": "Ya existe un usuario con el mismo ID"}), 400
 
-    def close(self):
-        self.connection.close()
+        consulta = "INSERT INTO usuarios (tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado, foto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'A', %s)"
 
-response = requests.get("URL")
-json_data = response.json()
+        cursor.execute(
+            consulta,
+            (
+                datos["tipoDocumento"],
+                datos["noDocumento"],
+                datos["firstName"],
+                datos.get("secondName", None),
+                datos["apellidos"],
+                datos["fechaNacimiento"],
+                datos["genero"],
+                datos["correoElectronico"],
+                datos["celular"],
+                datos["fechaActualizacion"],
+                datos.get("foto", None),
+            ),
+        )
 
-database = DATABASE()
-for usuario in json_data['usuarios']:
-    database.crear_usuarios(usuario)
-database.close()
+        connection.commit()
+        return jsonify({"mensaje": "Usuario agregado correctamente"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    finally:
+        cursor.close()
+        connection.close()
+
+
+@app.route("/logs", methods=["POST"])
+def add_log():
+    try:
+        connection = get_log_db_connection()
+        cursor = connection.cursor()
+
+        data = request.get_json()
+
+        query = "INSERT INTO logz (noDocumento, usuario, accion, fechaAccion) VALUES (%s, %s, %s, %s)"
+        cursor.execute(
+            query,
+            (data["noDocumento"], data["usuario"], data["accion"], data["fechaAccion"]),
+        )
+
+        connection.commit()
+        return jsonify({"mensaje": "Entrada de log agregada correctamente"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    finally:
+        cursor.close()
+        connection.close()
+
+
+if __name__ == "__main__":
+    create.run(debug=True)
