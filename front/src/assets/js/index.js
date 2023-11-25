@@ -18,7 +18,7 @@ readButton.addEventListener("click", function () {
 
 updateButton.addEventListener("click", function () {
   popupTitle = "Ingrese el documento del usuario que desee actualizar: ";
-  btnAccion = "Consultar usuario";
+  btnAccion = "Actualizar usuario";
   openPopup();
 });
 
@@ -37,3 +37,12 @@ function openPopup() {
   document.querySelector(".popup p").innerText = popupTitle;
   document.querySelector(".popup #accion").innerText = btnAccion;
 }
+
+document.querySelector(".popup #accion").addEventListener("click", function () {
+  // Dependiendo de la acción, redirigir a la página correspondiente
+  if (btnAccion === "Consultar usuario") {
+    window.location.href = "consultar_datos.html";
+  } else if (btnAccion === "Actualizar usuario") {
+    window.location.href = "actualizar_datos.html";
+  } // Agrega más casos según tus necesidades
+});
