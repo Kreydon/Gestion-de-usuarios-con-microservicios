@@ -1,6 +1,8 @@
+import json
+
 import pymysql
 import requests
-import json
+
 
 class DATABASE:
     def __init__(self):
@@ -13,7 +15,8 @@ class DATABASE:
     def eliminar_usuarios(self, noDocumento):
         query = f"""UPDATE usuarios
                     SET estado = 'P'
-                    WHERE noDocumento = {noDocumento};"""
+                    WHERE noDocumento = {noDocumento}
+                    AND estado = "A";"""
         try:
             self.cursor.execute(query)
             self.connection.commit()
@@ -25,10 +28,11 @@ class DATABASE:
     def close(self):
         self.connection.close()
 
+
 response = requests.get("URL")
 json_data = response.json()
 
 database = DATABASE()
-for usuario in json_data['usuarios']:
-    database.eliminar_usuarios(usuario['noDocumento'])
+for usuario in json_data["usuarios"]:
+    database.eliminar_usuarios(usuario["noDocumento"])
 database.close()
