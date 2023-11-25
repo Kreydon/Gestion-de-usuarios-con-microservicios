@@ -16,30 +16,30 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `usuarios`
+-- Table structure for table `logz`
 --
 
-DROP TABLE IF EXISTS `usuarios`;
+DROP TABLE IF EXISTS `logz`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `usuarios` (
-  `subrogada` int NOT NULL AUTO_INCREMENT,
-  `tipoDocumento` enum('Tarjeta de identidad','Cédula') NOT NULL,
+CREATE TABLE `logz` (
+  `idLog` int NOT NULL AUTO_INCREMENT,
   `noDocumento` int NOT NULL,
-  `firstName` varchar(30) NOT NULL,
-  `secondName` varchar(30) DEFAULT NULL,
-  `apellidos` varchar(60) NOT NULL,
-  `fechaNacimiento` date NOT NULL,
-  `genero` enum('Masculino','Femenino','No binario','Prefiero no reportar') NOT NULL,
-  `correoElectronico` varchar(320) NOT NULL,
-  `celular` varchar(10) NOT NULL,
-  `fechaActualizacion` date NOT NULL,
-  `estado` enum('A','P') NOT NULL,
-  `foto` longblob,
-  PRIMARY KEY (`subrogada`),
-  CONSTRAINT `usuarios_chk_2` CHECK (regexp_like(`correoElectronico`,_utf8mb4'^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$')),
+  `usuario` varchar(90) NOT NULL,
+  `accion` varchar(320) NOT NULL,
+  `fechaAccion` date NOT NULL,
+  PRIMARY KEY (`idLog`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `logz`
+--
+
+LOCK TABLES `logz` WRITE;
+/*!40000 ALTER TABLE `logz` DISABLE KEYS */;
+/*!40000 ALTER TABLE `logz` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -50,4 +50,4 @@ CREATE TABLE `usuarios` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-12 22:04:28
+-- Dump completed on 2023-11-25 11:07:52

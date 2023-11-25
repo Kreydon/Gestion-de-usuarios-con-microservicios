@@ -1,7 +1,33 @@
-version: "3"
+version: "3.1"
+
 services:
-  front:
-    container_name: front
-    build: ./front
+  db:
+    container_name: db
+    image: mysql
     ports:
-      - "5173:5173"
+      - "3307:3306"
+    command: --default-authentication-plugin=mysql_native_password --init-file /docker-entrypoint-initdb.d/init.sql
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_DATABASE: gestion_usuarios
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d
+    networks:
+      - red-gestion
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - red-gestion
+
+networks:
+  red-gestion:
+    driver: bridge
+
+volumes:
+  db-data:

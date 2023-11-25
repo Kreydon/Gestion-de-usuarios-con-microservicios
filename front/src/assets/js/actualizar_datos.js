@@ -32,7 +32,7 @@ const templateHTML = `
           pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+"><br>
 
         <label for="fechaNacimiento">Fecha de Nacimiento:</label>
-        <input type="date" id="fechaNacimiento" name="fechaNacimiento" value="2023-11-24" required><br>
+        <input type="date" id="fechaNacimiento" name="fechaNacimiento" value="2023-11-24" readonly required><br>
 
         <label for="genero">Género:</label>
         <select class="select" id="genero" name="genero">
