@@ -26,7 +26,7 @@ def get_log_db_connection():
     return mysql.connector.connect(**log_db_config)
 
 
-@app.route("/users", methods=["POST"])
+@create.route("/create_users", methods=["POST"])
 def agregar_usuario():
     try:
         connection = get_user_db_connection()
@@ -35,7 +35,7 @@ def agregar_usuario():
         datos = request.get_json()
 
         cursor.execute(
-            "SELECT * FROM usuarios WHERE noDocumento = %s AND estado = 'A'",
+            "SELECT * FROM usuarios WHERE (noDocumento = %s) AND (estado = 'A')",
             (datos["noDocumento"],),
         )
         existing_user = cursor.fetchone()
@@ -71,7 +71,7 @@ def agregar_usuario():
         connection.close()
 
 
-@app.route("/logs", methods=["POST"])
+@create.route("/logs", methods=["POST"])
 def add_log():
     try:
         connection = get_log_db_connection()

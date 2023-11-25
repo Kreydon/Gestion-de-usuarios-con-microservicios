@@ -26,7 +26,7 @@ def get_log_db_connection():
     return mysql.connector.connect(**log_db_config)
 
 
-@app.route("/users/<int:user_id>", methods=["PUT"])
+@update.route("/update_users/<int:user_id>", methods=["PUT"])
 def update_user(user_id):
     try:
         connection = get_user_db_connection()
@@ -50,10 +50,7 @@ def update_user(user_id):
             (data["noDocumento"],),
         )
 
-        insert_query = """INSERT INTO usuarios 
-                        (tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado, foto)
-                        VALUES
-                        (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'A', %s);"""
+        insert_query = "INSERT INTO usuarios (tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado, foto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'A', %s)"
 
         cursor.execute(
             insert_query,
@@ -81,7 +78,7 @@ def update_user(user_id):
         connection.close()
 
 
-@app.route("/logs", methods=["POST"])
+@update.route("/logs", methods=["POST"])
 def add_log():
     try:
         connection = get_log_db_connection()

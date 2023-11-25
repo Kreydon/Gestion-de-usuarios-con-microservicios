@@ -26,13 +26,22 @@ def get_log_db_connection():
     return mysql.connector.connect(**log_db_config)
 
 
-@app.route("/users/<int:user_id>", methods=["DELETE"])
+@delete.route("/delete_users/<int:user_id>", methods=["DELETE"])
 def delete_user(user_id):
     try:
         connection = get_user_db_connection()
         cursor = connection.cursor()
 
         data = request.get_json()
+
+        cursor.execute(
+            "SELECT * FROM usuarios WHERE noDocumento = %s AND estado = 'A'",
+            (data["noDocumento"],),
+        )
+        existing_user = cursor.fetchone()
+
+        if not existing_user:
+            return jsonify({"error": "No existe el usuario"}), 400
 
         cursor.execute(
             "UPDATE usuarios SET estado = 'P' WHERE noDocumento = %s AND estado = 'A'",
@@ -48,7 +57,7 @@ def delete_user(user_id):
         connection.close()
 
 
-@app.route("/logs", methods=["POST"])
+@delete.route("/logs", methods=["POST"])
 def add_log():
     try:
         connection = get_log_db_connection()

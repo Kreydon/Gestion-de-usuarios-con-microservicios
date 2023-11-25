@@ -26,14 +26,14 @@ def get_log_db_connection():
     return mysql.connector.connect(**log_db_config)
 
 
-@app.route("/usuarios/<int:id_usuario>", methods=["GET"])
+@read.route("/read_users/<int:id_usuario>", methods=["GET"])
 def obtener_usuario_por_id(id_usuario):
     try:
         connection = get_user_db_connection()
         cursor = connection.cursor(dictionary=True)
         query = """SELECT tipoDocumento, noDocumento, firstName, apellidos, fechaNacimiento
                    FROM usuarios
-                   WHERE noDocumento=%s AND estado = 'A';"""
+                   WHERE (noDocumento=%s) AND (estado = 'A');"""
         cursor.execute(query, (id_usuario,))
         usuario = cursor.fetchone()
 
@@ -48,7 +48,7 @@ def obtener_usuario_por_id(id_usuario):
         connection.close()
 
 
-@app.route("/logs", methods=["POST"])
+@read.route("/logs", methods=["POST"])
 def add_log():
     try:
         connection = get_log_db_connection()
