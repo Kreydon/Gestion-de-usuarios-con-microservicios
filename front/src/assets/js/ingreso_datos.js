@@ -64,3 +64,23 @@ document.getElementById("foto").addEventListener("change", function (e) {
     imagenSubida.src = "public/default_image.jpeg";
   }
 });
+
+// Agregar un evento change al input para manejar la selección de archivos
+foto.addEventListener("change", handleFileSelect);
+
+function handleFileSelect(event) {
+  const selectedFile = event.target.files[0];
+
+  if (selectedFile) {
+    // Leer el contenido del archivo usando FileReader
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      // e.target.result contiene el contenido del archivo en formato Base64
+      const imageBase64 = e.target.result;
+    };
+
+    // Leer como un URL de datos (Base64)
+    reader.readAsDataURL(selectedFile);
+  }
+}
