@@ -25,16 +25,16 @@
             </select><br>
 
             <label for="nroDocumento">Nro. Documento:</label>
-            <input type="text" id="nroDocumento" name="nroDocumento"
+            <input type="text" id="noDocumento" name="noDocumento"
               title="Máximo 10 números, solo se permiten carácteres númericos." required pattern="[0-9]{1,10}"><br>
 
             <label for="primerNombre">Primer Nombre:</label>
-            <input type="text" id="primerNombre" name="primerNombre"
+            <input type="text" id="primerNombre" name="firstName"
               title="Máximo 30 carácteres, solo se permiten carácteres alfabeticos." required maxlength="30"
               pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+"><br>
 
             <label for="segundoNombre">Segundo Nombre:</label>
-            <input type="text" id="segundoNombre" name="segundoNombre"
+            <input type="text" id="segundoNombre" name="secondName"
               title="Máximo 30 carácteres, solo se permiten carácteres alfabeticos." maxlength="30"
               pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+"><br>
 
@@ -55,7 +55,7 @@
             </select><br>
 
             <label for="email">Correo Electrónico:</label>
-            <input type="email" id="email" name="email"
+            <input type="email" id="email" name="correoElectronico"
               title="Se requiere un formato tipo email. Ejemplo: example@ejemplo.com" required><br>
 
             <label for="celular">Celular:</label>
@@ -66,7 +66,7 @@
             <img id="imagen-persona" src="public/default_image.jpeg" alt="Imagen">
             <div class="img-content">
               <label for="foto">Foto:</label>
-              <input type="file" id="foto" name="foto" accept=".jpg, .jpeg, .png" required><br>
+              <input type="file" id="foto" name="foto" accept=".jpg, .jpeg, .png"><br>
             </div>
           </div>
         </div>

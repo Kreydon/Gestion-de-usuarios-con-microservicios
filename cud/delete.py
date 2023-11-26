@@ -1,7 +1,9 @@
 import mysql.connector
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 delete = Flask(__name__)
+CORS(delete)
 
 user_db_config = {
     "host": "localhost",
@@ -81,4 +83,4 @@ def add_log():
 
 
 if __name__ == "__main__":
-    delete.run(debug=True)
+    delete.run(debug=True, port=5003)

@@ -1,7 +1,9 @@
 import mysql.connector
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 read = Flask(__name__)
+CORS(read)
 
 user_db_config = {
     "host": "localhost",
@@ -31,7 +33,7 @@ def obtener_usuario_por_id(id_usuario):
     try:
         connection = get_user_db_connection()
         cursor = connection.cursor(dictionary=True)
-        query = """SELECT tipoDocumento, noDocumento, firstName, apellidos, fechaNacimiento
+        query = """SELECT tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, correoElectronico, celular, foto
                    FROM usuarios
                    WHERE (noDocumento=%s) AND (estado = 'A');"""
         cursor.execute(query, (id_usuario,))
@@ -72,4 +74,4 @@ def add_log():
 
 
 if __name__ == "__main__":
-    read.run(debug=True)
+    read.run(debug=True, port=5001)

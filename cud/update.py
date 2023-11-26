@@ -1,7 +1,12 @@
+import json
+from datetime import datetime
+
 import mysql.connector
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 update = Flask(__name__)
+CORS(update)
 
 user_db_config = {
     "host": "localhost",
@@ -26,7 +31,7 @@ def get_log_db_connection():
     return mysql.connector.connect(**log_db_config)
 
 
-@update.route("/update_users/<int:user_id>", methods=["PUT"])
+@update.route("/update_users/<int:user_id>", methods=["POST"])
 def update_user(user_id):
     try:
         connection = get_user_db_connection()
@@ -52,6 +57,9 @@ def update_user(user_id):
 
         insert_query = "INSERT INTO usuarios (tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado, foto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'A', %s)"
 
+        fecha_hora_actual = datetime.now()
+        fecha_formateada = fecha_hora_actual.strftime("%Y-%m-%d %H:%M:%S")
+
         cursor.execute(
             insert_query,
             (
@@ -64,8 +72,8 @@ def update_user(user_id):
                 data["genero"],
                 data["correoElectronico"],
                 data["celular"],
-                data["fechaActualizacion"],
-                data.get("foto", None),
+                fecha_formateada,
+                json.dumps(data.get("foto", None)),
             ),
         )
 
@@ -102,4 +110,4 @@ def add_log():
 
 
 if __name__ == "__main__":
-    update.run(debug=True)
+    update.run(debug=True, port=5002)

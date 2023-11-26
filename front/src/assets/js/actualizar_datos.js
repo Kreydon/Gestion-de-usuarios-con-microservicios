@@ -1,67 +1,143 @@
-const templateHTML = `
-<header>
-<h1>Formulario de Actualización</h1>
-</header>
-<main>
-<div class="flex-container">
-  <form id="myForm" enctype="multipart/form-data">
-    <div class="flex-container2">
-      <div class="izquierda"><label for="tipoDocumento">Tipo de Documento:</label>
-        <select class="select" id="tipoDocumento" name="tipoDocumento">
-          <option value="Tarjeta de identidad">Tarjeta de Identidad</option>
-          <option value="Cédula">Cédula</option>
-        </select><br>
+const urlParams = new URLSearchParams(window.location.search);
+const noDoc = urlParams.get("noDocumento");
 
-        <label for="nroDocumento">Nro. Documento:</label>
-        <input type="text" id="nroDocumento" name="nroDocumento" value="123456"
-          title="Máximo 10 números, solo se permiten carácteres númericos." required pattern="[0-9]{1,10}" readonly><br>
+window.addEventListener("load", async function () {
+  fetch(`http://localhost:5001/read_users/${noDoc}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const dateB = new Date(data.fechaNacimiento);
+      const year = dateB.getFullYear();
+      const month = dateB.getMonth() + 1;
+      const day = dateB.getDate();
+      const formatted = `${year}-${month}-${day}`;
 
-        <label for="primerNombre">Primer Nombre:</label>
-        <input type="text" id="primerNombre" name="primerNombre" value="primerNombre"
-          title="Máximo 30 carácteres, solo se permiten carácteres alfabeticos." required maxlength="30"
-          pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+"><br>
+      document.getElementById("tipoDocumento").value = data.tipoDocumento;
+      document.getElementById("noDocumento").value = data.noDocumento;
+      document.getElementById("primerNombre").value = data.firstName;
+      document.getElementById("segundoNombre").value = data.secondName || "";
+      document.getElementById("apellidos").value = data.apellidos;
+      document.getElementById("fechaNacimiento").value = formatted;
+      document.getElementById("genero").value = data.genero;
+      document.getElementById("email").value = data.correoElectronico;
+      document.getElementById("celular").value = data.celular;
+      document.getElementById("foto").value = data.foto;
+    })
+    .catch((error) => console.error("Error:", error));
 
-        <label for="segundoNombre">Segundo Nombre:</label>
-        <input type="text" id="segundoNombre" name="segundoNombre" value="segundoNombre"
-          title="Máximo 30 carácteres, solo se permiten carácteres alfabeticos." maxlength="30"
-          pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+"><br>
+  document.getElementById("myForm").addEventListener("submit", function (e) {
+    const firstName = document.getElementById("primerNombre");
+    const secondName = document.getElementById("segundoNombre");
+    const apellidos = document.getElementById("apellidos");
+    const celular = document.getElementById("celular");
+    const nroDocumento = document.getElementById("noDocumento");
+    const correoElectronico = document.getElementById("email");
+    const foto = document.getElementById("foto");
 
-        <label for="apellidos">Apellidos:</label>
-        <input type="text" id="apellidos" name="apellidos" value="apellidos"
-          title="Máximo 60 carácteres, solo se permiten carácteres alfabeticos." required maxlength="60"
-          pattern="[A-Za-záéíóúÁÉÍÓÚñÑ\s]+"><br>
+    console.log(nroDocumento.value);
 
-        <label for="fechaNacimiento">Fecha de Nacimiento:</label>
-        <input type="date" id="fechaNacimiento" name="fechaNacimiento" value="2023-11-24" readonly required><br>
+    if (!/^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/.test(firstName.value)) {
+      alert(
+        "El primer nombre no debe contener números ni caracteres especiales."
+      );
+      e.preventDefault();
+    }
 
-        <label for="genero">Género:</label>
-        <select class="select" id="genero" name="genero">
-          <option value="Masculino">Masculino</option>
-          <option value="Femenino">Femenino</option>
-          <option value="No binario">No binario</option>
-          <option value="Prefiero no reportar">Prefiero no reportar</option>
-        </select><br>
+    if (
+      secondName.value &&
+      !/^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/.test(secondName.value)
+    ) {
+      alert(
+        "El segundo nombre no debe contener números ni caracteres especiales."
+      );
+      e.preventDefault();
+    }
 
-        <label for="email">Correo Electrónico:</label>
-        <input type="email" id="email" name="email" value="email"
-          title="Se requiere un formato tipo email. Ejemplo: example@ejemplo.com" required><br>
+    if (!/^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/.test(apellidos.value)) {
+      alert(
+        "Los apellidos no deben contener números ni caracteres especiales."
+      );
+      e.preventDefault();
+    }
 
-        <label for="celular">Celular:</label>
-        <input type="tel" id="celular" name="celular" value="123456"
-          title="Máximo 10 números, solo se permiten carácteres númericos." required pattern="[0-9]{10}"><br>
-      </div>
-      <div class="derecha">
-        <img id="imagen-persona" src="public/default_image.jpeg" alt="Imagen">
-        <div class="img-content">
-          <label for="foto">Foto:</label>
-          <input type="file" id="foto" name="foto" accept=".jpg, .jpeg, .png" required><br>
-        </div>
-      </div>
-    </div>
-    <input type="submit" value="Enviar">
-  </form>
-</div>
-</main>
-`;
+    if (!/^\d{10}$/.test(celular.value)) {
+      alert("El número de celular debe contener 10 dígitos numéricos.");
+      e.preventDefault();
+    }
 
-document.getElementById("app").innerHTML = templateHTML;
+    if (!/^\d{1,10}$/.test(nroDocumento.value)) {
+      alert("El número de documento debe contener solo dígitos numéricos.");
+      e.preventDefault();
+    }
+
+    if (foto.files.length > 0 && foto.files[0].size > 2 * 1024 * 1024) {
+      alert("El tamaño de la foto no debe superar 2 MB.");
+      e.preventDefault();
+    }
+
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    foto.addEventListener("change", handleFileSelect);
+
+    function handleFileSelect(event) {
+      const selectedFile = event.target.files[0];
+
+      if (selectedFile) {
+        // Leer el contenido del archivo usando FileReader
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          // e.target.result contiene el contenido del archivo en formato Base64
+          const imageBase64 = e.target.result;
+          foto.value = imageBase64;
+        };
+
+        // Leer como un URL de datos (Base64)
+        reader.readAsDataURL(selectedFile);
+      }
+    }
+
+    fetch(`http://localhost:5002/update_users/${noDoc}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(Object.fromEntries(formData)),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Manejar la respuesta del servidor
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  });
+
+  document.getElementById("foto").addEventListener("change", function (e) {
+    const imagenSubida = document.getElementById("imagen-persona");
+    const archivo = e.target.files[0]; // Obtiene el primer archivo seleccionado
+
+    if (archivo) {
+      // Verifica que se haya seleccionado un archivo
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        // Actualiza la fuente de la imagen con la imagen cargada
+        imagenSubida.src = e.target.result;
+      };
+
+      // Lee el archivo como una URL de datos (base64)
+      reader.readAsDataURL(archivo);
+    } else {
+      // Si no se selecciona un archivo, puedes restaurar la imagen predeterminada
+      imagenSubida.src = "public/default_image.jpeg";
+    }
+  });
+});

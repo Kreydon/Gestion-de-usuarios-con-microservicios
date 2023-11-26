@@ -1,7 +1,12 @@
+import json
+from datetime import datetime
+
 import mysql.connector
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 create = Flask(__name__)
+CORS(create)
 
 user_db_config = {
     "host": "localhost",
@@ -34,6 +39,9 @@ def agregar_usuario():
 
         datos = request.get_json()
 
+        if not datos:
+            return jsonify({"error": "Datos JSON no proporcionados o no válidos"}), 400
+
         cursor.execute(
             "SELECT * FROM usuarios WHERE (noDocumento = %s) AND (estado = 'A')",
             (datos["noDocumento"],),
@@ -44,6 +52,9 @@ def agregar_usuario():
             return jsonify({"error": "Ya existe un usuario con el mismo ID"}), 400
 
         consulta = "INSERT INTO usuarios (tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado, foto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'A', %s)"
+
+        fecha_hora_actual = datetime.now()
+        fecha_formateada = fecha_hora_actual.strftime("%Y-%m-%d %H:%M:%S")
 
         cursor.execute(
             consulta,
@@ -57,8 +68,8 @@ def agregar_usuario():
                 datos["genero"],
                 datos["correoElectronico"],
                 datos["celular"],
-                datos["fechaActualizacion"],
-                datos.get("foto", None),
+                fecha_formateada,
+                json.dumps(datos.get("foto", None)),
             ),
         )
 

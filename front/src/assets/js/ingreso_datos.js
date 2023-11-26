@@ -1,22 +1,20 @@
 document.getElementById("myForm").addEventListener("submit", function (e) {
-  const primerNombre = document.getElementById("primerNombre");
-  const segundoNombre = document.getElementById("segundoNombre");
+  const firstName = document.getElementById("primerNombre");
+  const secondName = document.getElementById("segundoNombre");
   const apellidos = document.getElementById("apellidos");
   const celular = document.getElementById("celular");
-  const nroDocumento = document.getElementById("nroDocumento");
+  const nroDocumento = document.getElementById("noDocumento");
+  const correoElectronico = document.getElementById("email");
   const foto = document.getElementById("foto");
 
-  if (!/^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/.test(primerNombre.value)) {
+  if (!/^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/.test(firstName.value)) {
     alert(
       "El primer nombre no debe contener números ni caracteres especiales."
     );
     e.preventDefault();
   }
 
-  if (
-    segundoNombre.value &&
-    !/^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/.test(segundoNombre.value)
-  ) {
+  if (secondName.value && !/^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/.test(secondName.value)) {
     alert(
       "El segundo nombre no debe contener números ni caracteres especiales."
     );
@@ -42,6 +40,46 @@ document.getElementById("myForm").addEventListener("submit", function (e) {
     alert("El tamaño de la foto no debe superar 2 MB.");
     e.preventDefault();
   }
+
+  e.preventDefault();
+
+  const formData = new FormData(this);
+
+  foto.addEventListener("change", handleFileSelect);
+
+  function handleFileSelect(event) {
+    const selectedFile = event.target.files[0];
+
+    if (selectedFile) {
+      // Leer el contenido del archivo usando FileReader
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        // e.target.result contiene el contenido del archivo en formato Base64
+        const imageBase64 = e.target.result;
+        foto.value = imageBase64;
+      };
+
+      // Leer como un URL de datos (Base64)
+      reader.readAsDataURL(selectedFile);
+    }
+  }
+
+  fetch("http://localhost:5000/create_users", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(Object.fromEntries(formData)),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      // Manejar la respuesta del servidor
+      console.log(data);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 });
 
 document.getElementById("foto").addEventListener("change", function (e) {
@@ -64,23 +102,3 @@ document.getElementById("foto").addEventListener("change", function (e) {
     imagenSubida.src = "public/default_image.jpeg";
   }
 });
-
-// Agregar un evento change al input para manejar la selección de archivos
-foto.addEventListener("change", handleFileSelect);
-
-function handleFileSelect(event) {
-  const selectedFile = event.target.files[0];
-
-  if (selectedFile) {
-    // Leer el contenido del archivo usando FileReader
-    const reader = new FileReader();
-
-    reader.onload = function (e) {
-      // e.target.result contiene el contenido del archivo en formato Base64
-      const imageBase64 = e.target.result;
-    };
-
-    // Leer como un URL de datos (Base64)
-    reader.readAsDataURL(selectedFile);
-  }
-}

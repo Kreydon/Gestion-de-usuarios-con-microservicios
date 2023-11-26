@@ -35,7 +35,7 @@ CREATE TABLE `usuarios` (
   `celular` varchar(10) NOT NULL,
   `fechaActualizacion` date NOT NULL,
   `estado` enum('A','P') NOT NULL,
-  `foto` longblob,
+  `foto` longtext,
   PRIMARY KEY (`subrogada`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

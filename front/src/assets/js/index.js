@@ -39,10 +39,85 @@ function openPopup() {
 }
 
 document.querySelector(".popup #accion").addEventListener("click", function () {
-  // Dependiendo de la acción, redirigir a la página correspondiente
   if (btnAccion === "Consultar usuario") {
-    window.location.href = "consultar_datos.html";
+    const noDocumento = document.getElementById("userID").value;
+
+    // Realizar la solicitud a la API
+    fetch(`http://localhost:5001/read_users/${noDocumento}`)
+      .then((response) => {
+        // Verificar si la respuesta fue exitosa (código de estado en el rango 200-299)
+        if (!response.ok) {
+          throw new Error(
+            `Error en la solicitud: ${response.status} ${response.statusText}`
+          );
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Verificar si se encontró el usuario
+        if (data.mensaje && data.mensaje === "Usuario no encontrado") {
+          console.log("Usuario no encontrado");
+        } else {
+          // Redirigir a la página de consulta_usuario.html
+          window.location.href = `consultar_datos.html?noDocumento=${noDocumento}`;
+        }
+      })
+      .catch((error) => {
+        // Capturar y manejar cualquier error que ocurra durante la solicitud
+        console.error("Error en la solicitud:", error);
+      });
   } else if (btnAccion === "Actualizar usuario") {
-    window.location.href = "actualizar_datos.html";
-  } // Agrega más casos según tus necesidades
+    const noDocumento = document.getElementById("userID").value;
+
+    // Realizar la solicitud a la API
+    fetch(`http://localhost:5001/read_users/${noDocumento}`)
+      .then((response) => {
+        // Verificar si la respuesta fue exitosa (código de estado en el rango 200-299)
+        if (!response.ok) {
+          throw new Error(
+            `Error en la solicitud: ${response.status} ${response.statusText}`
+          );
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Verificar si se encontró el usuario
+        if (data.mensaje && data.mensaje === "Usuario no encontrado") {
+          console.log("Usuario no encontrado");
+        } else {
+          // Redirigir a la página de consulta_usuario.html
+          window.location.href = `actualizar_datos.html?noDocumento=${noDocumento}`;
+        }
+      })
+      .catch((error) => {
+        // Capturar y manejar cualquier error que ocurra durante la solicitud
+        console.error("Error en la solicitud:", error);
+      });
+  } else if (btnAccion === "Eliminar usuario") {
+    const noDocumento = document.getElementById("userID").value;
+
+    fetch(`http://localhost:5003/delete_users/${noDocumento}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ noDocumento: noDocumento }),
+    })
+      .then((response) => {
+        // Verificar si la respuesta fue exitosa (código de estado en el rango 200-299)
+        if (!response.ok) {
+          throw new Error(
+            `Error en la solicitud: ${response.status} ${response.statusText}`
+          );
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data); // Manejar la respuesta del servidor, si es necesario
+      })
+      .catch((error) => {
+        // Capturar y manejar cualquier error que ocurra durante la solicitud
+        console.error("Error en la solicitud:", error);
+      });
+  }
 });
