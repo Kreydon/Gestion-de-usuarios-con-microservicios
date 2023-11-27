@@ -19,6 +19,11 @@ log_db_config = {
     "database": "gestion_usuarios",  # Update with your actual log database name
 }
 
+UPLOAD_FOLDER = '/var/lib/mysql/uploads' # Ruta placeholder
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Function to get a database connection for user management
 def get_user_db_connection():
@@ -57,102 +62,130 @@ def obtener_usuario_por_id(id_usuario):
 @app.route("/users", methods=["POST"])
 def agregar_usuario():
     try:
-        connection = get_user_db_connection()
-        cursor = connection.cursor()
+        if 'foto' not in request.files:
+            return jsonify({"error": "No file part"}), 400
 
-        datos = request.get_json()
+        file = request.files['foto']
+        if file.filename == '':
+            return jsonify({"error": "No selected file"}), 400
 
-        cursor.execute(
-            "SELECT * FROM usuarios WHERE noDocumento = %s AND estado = 'A'",
-            (datos["noDocumento"],),
-        )
-        existing_user = cursor.fetchone()
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
 
-        if existing_user:
-            return jsonify({"error": "Ya existe un usuario con el mismo ID"}), 400
+            datos = request.form
+            connection = get_user_db_connection()
+            cursor = connection.cursor()
 
-        consulta = "INSERT INTO usuarios (tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado, foto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'A', %s)"
+            cursor.execute(
+                "SELECT * FROM usuarios WHERE noDocumento = %s AND estado = 'A'",
+                (datos["noDocumento"],),
+            )
+            existing_user = cursor.fetchone()
 
-        cursor.execute(
-            consulta,
-            (
-                datos["tipoDocumento"],
-                datos["noDocumento"],
-                datos["firstName"],
-                datos.get("secondName", None),
-                datos["apellidos"],
-                datos["fechaNacimiento"],
-                datos["genero"],
-                datos["correoElectronico"],
-                datos["celular"],
-                datos["fechaActualizacion"],
-                datos.get("foto", None),
-            ),
-        )
+            if existing_user:
+                return jsonify({"error": "Ya existe un usuario con el mismo ID"}), 400
 
-        connection.commit()
-        return jsonify({"mensaje": "Usuario agregado correctamente"})
+            consulta = """INSERT INTO usuarios (tipoDocumento, noDocumento, firstName, secondName, apellidos, 
+                          fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado, foto) 
+                          VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'A', %s)"""
+
+            cursor.execute(
+                consulta,
+                (
+                    datos["tipoDocumento"],
+                    datos["noDocumento"],
+                    datos["firstName"],
+                    datos.get("secondName", None),
+                    datos["apellidos"],
+                    datos["fechaNacimiento"],
+                    datos["genero"],
+                    datos["correoElectronico"],
+                    datos["celular"],
+                    datos["fechaActualizacion"],
+                    file_path,
+                ),
+            )
+
+            connection.commit()
+            return jsonify({"mensaje": "Usuario agregado correctamente"})
     except Exception as e:
         return jsonify({"error": str(e)})
     finally:
-        cursor.close()
-        connection.close()
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
 
 # Endpoint to update a user
 @app.route("/users/<int:user_id>", methods=["PUT"])
 def update_user(user_id):
     try:
-        connection = get_user_db_connection()
-        cursor = connection.cursor()
+        if 'foto' not in request.files:
+            return jsonify({"error": "No file part"}), 400
 
-        data = request.get_json()
+        file = request.files['foto']
+        if file.filename == '':
+            return jsonify({"error": "No selected file"}), 400
 
-        cursor.execute(
-            "SELECT * FROM usuarios WHERE noDocumento = %s AND estado = 'A'",
-            (data["noDocumento"],),
-        )
-        existing_user = cursor.fetchone()
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
 
-        if not existing_user:
-            return jsonify({"error": "No existe el usuario"}), 400
+            data = request.form
+            connection = get_user_db_connection()
+            cursor = connection.cursor()
 
-        cursor.execute(
-            """UPDATE usuarios
-                SET estado = 'P'
-                WHERE (noDocumento = %s) and (estado = 'A');""",
-            (data["noDocumento"],),
-        )
+            cursor.execute(
+                "SELECT * FROM usuarios WHERE noDocumento = %s AND estado = 'A'",
+                (data["noDocumento"],),
+            )
+            existing_user = cursor.fetchone()
 
-        insert_query = """INSERT INTO usuarios 
-                        (tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado, foto)
-                        VALUES
-                        (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'A', %s);"""
+            if not existing_user:
+                return jsonify({"error": "No existe el usuario"}), 400
 
-        cursor.execute(
-            insert_query,
-            (
-                data["tipoDocumento"],
-                data["noDocumento"],
-                data["firstName"],
-                data.get("secondName", None),
-                data["apellidos"],
-                data["fechaNacimiento"],
-                data["genero"],
-                data["correoElectronico"],
-                data["celular"],
-                data["fechaActualizacion"],
-                data.get("foto", None),
-            ),
-        )
+            cursor.execute(
+                """UPDATE usuarios
+                    SET estado = 'P'
+                    WHERE (noDocumento = %s) and (estado = 'A');""",
+                (data["noDocumento"],),
+            )
 
-        connection.commit()
-        return jsonify({"mensaje": "Usuario actualizado correctamente"})
+            insert_query = """INSERT INTO usuarios 
+                            (tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, 
+                             genero, correoElectronico, celular, fechaActualizacion, estado, foto)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'A', %s);"""
+
+            cursor.execute(
+                insert_query,
+                (
+                    data["tipoDocumento"],
+                    data["noDocumento"],
+                    data["firstName"],
+                    data.get("secondName", None),
+                    data["apellidos"],
+                    data["fechaNacimiento"],
+                    data["genero"],
+                    data["correoElectronico"],
+                    data["celular"],
+                    data["fechaActualizacion"],
+                    file_path,
+                ),
+            )
+
+            connection.commit()
+            return jsonify({"mensaje": "Usuario actualizado correctamente"})
     except Exception as e:
         return jsonify({"error": str(e)})
     finally:
-        cursor.close()
-        connection.close()
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
 
 # Endpoint to delete a user
