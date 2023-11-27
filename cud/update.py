@@ -1,6 +1,5 @@
 import json
 from datetime import datetime
-
 import mysql.connector
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -22,14 +21,11 @@ log_db_config = {
     "database": "gestion_usuarios",
 }
 
-
 def get_user_db_connection():
     return mysql.connector.connect(**user_db_config)
 
-
 def get_log_db_connection():
     return mysql.connector.connect(**log_db_config)
-
 
 @update.route("/update_users/<int:user_id>", methods=["POST"])
 def update_user(user_id):
@@ -37,7 +33,13 @@ def update_user(user_id):
         connection = get_user_db_connection()
         cursor = connection.cursor()
 
-        data = request.get_json()
+        if 'foto' not in request.files:
+            return jsonify({"error": "No file part"}), 400
+
+        file = request.files['foto']
+        foto = file.read()
+
+        data = request.form
 
         cursor.execute(
             "SELECT * FROM usuarios WHERE noDocumento = %s AND estado = 'A'",
@@ -55,7 +57,10 @@ def update_user(user_id):
             (data["noDocumento"],),
         )
 
-        insert_query = "INSERT INTO usuarios (tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado, foto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'A', %s)"
+        insert_query = """INSERT INTO usuarios 
+                          (tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, 
+                           correoElectronico, celular, fechaActualizacion, estado, foto)
+                          VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'A', %s)"""
 
         fecha_hora_actual = datetime.now()
         fecha_formateada = fecha_hora_actual.strftime("%Y-%m-%d %H:%M:%S")
@@ -73,7 +78,7 @@ def update_user(user_id):
                 data["correoElectronico"],
                 data["celular"],
                 fecha_formateada,
-                json.dumps(data.get("foto", None)),
+                foto,
             ),
         )
 
@@ -84,7 +89,6 @@ def update_user(user_id):
     finally:
         cursor.close()
         connection.close()
-
 
 @update.route("/logs", methods=["POST"])
 def add_log():
@@ -107,7 +111,6 @@ def add_log():
     finally:
         cursor.close()
         connection.close()
-
 
 if __name__ == "__main__":
     update.run(debug=True, port=5002)
