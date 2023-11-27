@@ -1,6 +1,5 @@
 import json
 from datetime import datetime
-
 import mysql.connector
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -22,14 +21,11 @@ log_db_config = {
     "database": "gestion_usuarios",
 }
 
-
 def get_user_db_connection():
     return mysql.connector.connect(**user_db_config)
 
-
 def get_log_db_connection():
     return mysql.connector.connect(**log_db_config)
-
 
 @create.route("/create_users", methods=["POST"])
 def agregar_usuario():
@@ -37,10 +33,13 @@ def agregar_usuario():
         connection = get_user_db_connection()
         cursor = connection.cursor()
 
-        datos = request.get_json()
+        if 'foto' not in request.files:
+            return jsonify({"error": "No file part"}), 400
 
-        if not datos:
-            return jsonify({"error": "Datos JSON no proporcionados o no válidos"}), 400
+        file = request.files['foto']
+        foto = file.read()
+
+        datos = request.form
 
         cursor.execute(
             "SELECT * FROM usuarios WHERE (noDocumento = %s) AND (estado = 'A')",
@@ -51,7 +50,9 @@ def agregar_usuario():
         if existing_user:
             return jsonify({"error": "Ya existe un usuario con el mismo ID"}), 400
 
-        consulta = "INSERT INTO usuarios (tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado, foto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'A', %s)"
+        consulta = """INSERT INTO usuarios (tipoDocumento, noDocumento, firstName, secondName, apellidos,
+                      fechaNacimiento, genero, correoElectronico, celular, fechaActualizacion, estado, foto)
+                      VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'A', %s)"""
 
         fecha_hora_actual = datetime.now()
         fecha_formateada = fecha_hora_actual.strftime("%Y-%m-%d %H:%M:%S")
@@ -69,7 +70,7 @@ def agregar_usuario():
                 datos["correoElectronico"],
                 datos["celular"],
                 fecha_formateada,
-                json.dumps(datos.get("foto", None)),
+                foto,
             ),
         )
 
@@ -80,7 +81,6 @@ def agregar_usuario():
     finally:
         cursor.close()
         connection.close()
-
 
 @create.route("/logs", methods=["POST"])
 def add_log():
@@ -103,7 +103,6 @@ def add_log():
     finally:
         cursor.close()
         connection.close()
-
 
 if __name__ == "__main__":
     create.run(debug=True)
