@@ -120,9 +120,11 @@ def agregar_usuario():
 
 
 # Endpoint to update a user
-@app.route("/users/<int:user_id>", methods=["PUT"])
-def update_user(user_id):
+@update.route("/update_users", methods=["POST"])
+def update_user():
     try:
+        user_id = request.form.get("user_id")
+        
         if 'foto' not in request.files:
             return jsonify({"error": "No file part"}), 400
 
