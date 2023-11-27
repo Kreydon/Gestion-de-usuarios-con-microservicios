@@ -3,7 +3,7 @@ const noDoc = urlParams.get("noDocumento");
 console.log(noDoc);
 
 window.addEventListener("load", async function () {
-  fetch(`http://localhost:5001/read_users/${noDoc}`)
+  fetch(`http://localhost:5000/read_users/${noDoc}`)
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);

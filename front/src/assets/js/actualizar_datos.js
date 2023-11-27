@@ -2,7 +2,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const noDoc = urlParams.get("noDocumento");
 
 window.addEventListener("load", async function () {
-  fetch(`http://localhost:5001/read_users/${noDoc}`)
+  fetch(`http://localhost:5000/read_users/${noDoc}`)
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -103,7 +103,7 @@ window.addEventListener("load", async function () {
       }
     }
 
-    fetch(`http://localhost:5002/update_users/${noDoc}`, {
+    fetch(`http://localhost:5000/update_users/${noDoc}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

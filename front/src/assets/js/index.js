@@ -43,7 +43,7 @@ document.querySelector(".popup #accion").addEventListener("click", function () {
     const noDocumento = document.getElementById("userID").value;
 
     // Realizar la solicitud a la API
-    fetch(`http://localhost:5001/read_users/${noDocumento}`)
+    fetch(`http://localhost:5000/read_users/${noDocumento}`)
       .then((response) => {
         // Verificar si la respuesta fue exitosa (código de estado en el rango 200-299)
         if (!response.ok) {
@@ -70,7 +70,7 @@ document.querySelector(".popup #accion").addEventListener("click", function () {
     const noDocumento = document.getElementById("userID").value;
 
     // Realizar la solicitud a la API
-    fetch(`http://localhost:5001/read_users/${noDocumento}`)
+    fetch(`http://localhost:5000/read_users/${noDocumento}`)
       .then((response) => {
         // Verificar si la respuesta fue exitosa (código de estado en el rango 200-299)
         if (!response.ok) {
@@ -96,7 +96,7 @@ document.querySelector(".popup #accion").addEventListener("click", function () {
   } else if (btnAccion === "Eliminar usuario") {
     const noDocumento = document.getElementById("userID").value;
 
-    fetch(`http://localhost:5003/delete_users/${noDocumento}`, {
+    fetch(`http://localhost:5000/delete_users/${noDocumento}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
