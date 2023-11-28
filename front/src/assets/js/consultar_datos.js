@@ -34,30 +34,32 @@ window.addEventListener("load", async function () {
     .catch((error) => console.error("Error:", error));
   const myForm = document.getElementById("myForm");
 
-  const data = {};
+  setTimeout(() => {
+    const data = {};
 
-  for (let element of myForm.elements) {
-    if (element.name) {
-      data[element.name] = element.value;
+    for (let element of myForm.elements) {
+      if (element.name) {
+        data[element.name] = element.value;
+      }
     }
-  }
 
-  // data tendrá los valores del formulario
-  console.log(data);
+    // data tendrá los valores del formulario
+    console.log(data);
 
-  fetch("http://localhost:5001/logs", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      // Manejar la respuesta del servidor
-      console.log(data);
+    fetch("http://localhost:5001/logs", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        // Manejar la respuesta del servidor
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, 1000);
 });

@@ -60,8 +60,8 @@ def delete_user(user_id):
         connection_user.close()
 
 
-@delete.route("/logs", methods=["POST"])
-def add_log():
+@delete.route("/logs/<int:user_id>", methods=["POST"])
+def add_log(user_id):
     try:
         connection_log = get_log_db_connection()
         cursor_log = connection_log.cursor()
