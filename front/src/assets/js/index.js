@@ -7,7 +7,27 @@ let popupTitle = "";
 let btnAccion = "";
 
 createButton.addEventListener("click", function () {
-  window.location.href = "ingreso_datos.html";
+  fetch("http://localhost:5000/create_users", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({}),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      window.location.href = "ingreso_datos.html";
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      if (
+        error instanceof TypeError &&
+        error.message.includes("NetworkError")
+      ) {
+        window.location.href = "servicio_apagado.html";
+      }
+    });
 });
 
 readButton.addEventListener("click", function () {
@@ -65,6 +85,12 @@ document.querySelector(".popup #accion").addEventListener("click", function () {
       .catch((error) => {
         // Capturar y manejar cualquier error que ocurra durante la solicitud
         console.error("Error en la solicitud:", error);
+        if (
+          error instanceof TypeError &&
+          error.message.includes("NetworkError")
+        ) {
+          window.location.href = "servicio_apagado.html";
+        }
       });
   } else if (btnAccion === "Actualizar usuario") {
     const noDocumento = document.getElementById("userID").value;
@@ -92,6 +118,12 @@ document.querySelector(".popup #accion").addEventListener("click", function () {
       .catch((error) => {
         // Capturar y manejar cualquier error que ocurra durante la solicitud
         console.error("Error en la solicitud:", error);
+        if (
+          error instanceof TypeError &&
+          error.message.includes("NetworkError")
+        ) {
+          window.location.href = "servicio_apagado.html";
+        }
       });
   } else if (btnAccion === "Eliminar usuario") {
     const noDocumento = document.getElementById("userID").value;
@@ -105,10 +137,8 @@ document.querySelector(".popup #accion").addEventListener("click", function () {
     })
       .then((response) => {
         // Verificar si la respuesta fue exitosa (código de estado en el rango 200-299)
-        if (!response.ok) {
-          throw new Error(
-            `Error en la solicitud: ${response.status} ${response.statusText}`
-          );
+        if (!response.ok && response.status === 0) {
+          throw new Error("Error de conexión con la API");
         }
         return response.json();
       })
@@ -116,8 +146,13 @@ document.querySelector(".popup #accion").addEventListener("click", function () {
         console.log(data); // Manejar la respuesta del servidor, si es necesario
       })
       .catch((error) => {
-        // Capturar y manejar cualquier error que ocurra durante la solicitud
         console.error("Error en la solicitud:", error);
+        if (
+          error instanceof TypeError &&
+          error.message.includes("NetworkError")
+        ) {
+          window.location.href = "servicio_apagado.html";
+        }
       });
 
     fetch(`http://localhost:5003/logs/${noDocumento}`, {
