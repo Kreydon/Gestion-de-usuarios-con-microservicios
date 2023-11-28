@@ -30,7 +30,8 @@ createButton.addEventListener("click", function () {
     });
 });
 
-const showLogsButton = document.getElementById("showLogs");
+// BOTÓN LOGS
+const showLogsButton = document.getElementById("view-logs");
 
 showLogsButton.addEventListener("click", function () {
   fetch('http://localhost:5000/logs')
