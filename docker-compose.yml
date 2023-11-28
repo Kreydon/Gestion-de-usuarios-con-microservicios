@@ -35,6 +35,7 @@ services:
       - db
     networks:
       - gestion
+
   read:
     container_name: read
     build:

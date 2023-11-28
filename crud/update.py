@@ -109,4 +109,4 @@ def add_log():
 
 
 if __name__ == "__main__":
-    update.run(debug=True, port=5002)
+    update.run(debug=True, port=5002, host="0.0.0.0")

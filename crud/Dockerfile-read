@@ -6,6 +6,6 @@ COPY ./read.py /app
 
 RUN pip install Flask Flask-CORS Flask-Restful mysql-connector-python
 
-EXPOSE 5001
+EXPOSE 5000
 
 CMD ["python", "read.py"]

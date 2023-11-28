@@ -8,18 +8,18 @@ from flask_cors import CORS
 create = Flask(__name__)
 CORS(create)
 
-""" user_db_config = {
+user_db_config = {
     "host": "db",
     "user": "root",
     "database": "gestion_usuarios",
-} """
+}
 
-user_db_config = {
+""" user_db_config = {
     "host": "localhost",
     "user": "root",
     "password": "14062003",
     "database": "gestion_usuarios",
-}
+} """
 
 """ log_db_config = {
     "host": "localhost",

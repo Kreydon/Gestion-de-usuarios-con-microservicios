@@ -5,18 +5,18 @@ from flask_cors import CORS
 read = Flask(__name__)
 CORS(read)
 
-""" user_db_config = {
+user_db_config = {
     "host": "db",
     "user": "root",
     "database": "gestion_usuarios",
-} """
+}
 
-user_db_config = {
+""" user_db_config = {
     "host": "localhost",
     "user": "root",
     "password": "14062003",
     "database": "gestion_usuarios",
-}
+} """
 
 """ log_db_config = {
     "host": "localhost",
@@ -80,4 +80,4 @@ def add_log():
 
 
 if __name__ == "__main__":
-    read.run(debug=True, port=5001)
+    read.run(debug=True, port=5001, host="0.0.0.0")
