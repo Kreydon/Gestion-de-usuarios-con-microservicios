@@ -30,7 +30,7 @@ createButton.addEventListener("click", function () {
     });
 });
 
-# BOTÓN LOGS
+// BOTÓN LOGS
 const showLogsButton = document.getElementById("showLogs");
 
 // Agrega un event listener para el evento 'click'
@@ -51,8 +51,8 @@ showLogsButton.addEventListener("click", function () {
       console.error('Error al obtener los logs:', e);
     });
 });
-
 // BOTÓN LOGS
+
 function createLogsPopup(logs) {
   const popup = document.createElement('div');
   popup.classList.add('popup');
