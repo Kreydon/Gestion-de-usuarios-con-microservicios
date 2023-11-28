@@ -21,38 +21,40 @@ user_db_config = {
     "database": "gestion_usuarios",
 } """
 
-""" log_db_config = {
-    "host": "localhost",
+log_db_config = {
+    "host": "db",
     "user": "root",
-    "password": "14062003",
     "database": "gestion_usuarios",
-} """
+}
 
 
 def get_user_db_connection():
     return mysql.connector.connect(**user_db_config)
 
 
-""" def get_log_db_connection():
-    return mysql.connector.connect(**log_db_config) """
+def get_log_db_connection():
+    return mysql.connector.connect(**log_db_config)
 
 
 @create.route("/create_users", methods=["POST"])
 def agregar_usuario():
     try:
-        connection = get_user_db_connection()
-        cursor = connection.cursor()
+        connection_user = get_user_db_connection()
+        cursor_user = connection_user.cursor()
+
+        connection_log = get_log_db_connection()
+        cursor_log = connection_log.cursor()
 
         datos = request.get_json()
 
         if not datos:
             return jsonify({"error": "Datos JSON no proporcionados o no válidos"}), 400
 
-        cursor.execute(
+        cursor_user.execute(
             "SELECT * FROM usuarios WHERE (noDocumento = %s) AND (estado = 'A')",
             (datos["noDocumento"],),
         )
-        existing_user = cursor.fetchone()
+        existing_user = cursor_user.fetchone()
 
         if existing_user:
             return jsonify({"error": "Ya existe un usuario con el mismo ID"}), 400
@@ -62,7 +64,7 @@ def agregar_usuario():
         fecha_hora_actual = datetime.now()
         fecha_formateada = fecha_hora_actual.strftime("%Y-%m-%d %H:%M:%S")
 
-        cursor.execute(
+        cursor_user.execute(
             consulta,
             (
                 datos["tipoDocumento"],
@@ -79,13 +81,31 @@ def agregar_usuario():
             ),
         )
 
-        connection.commit()
+        usuario = (datos["firstName"]) + " " + (datos["apellidos"])
+        accion = "Se creo el usuario"
+
+        query = "INSERT INTO logz (noDocumento, usuario, accion, fechaAccion, tipoDocumento) VALUES (%s, %s, %s, %s, %s)"
+        cursor_log.execute(
+            query,
+            (
+                datos["noDocumento"],
+                usuario,
+                accion,
+                fecha_formateada,
+                datos["tipoDocumento"],
+            ),
+        )
+
+        connection_user.commit()
+        connection_log.commit()
         return jsonify({"mensaje": "Usuario agregado correctamente"})
     except Exception as e:
         return jsonify({"error": str(e)})
     finally:
-        cursor.close()
-        connection.close()
+        cursor_user.close()
+        connection_user.close()
+        cursor_log.close()
+        connection_log.close()
 
 
 """ @create.route("/logs", methods=["POST"])

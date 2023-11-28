@@ -12,8 +12,8 @@ window.addEventListener("load", async function () {
     .then((data) => {
       const dateB = new Date(data.fechaNacimiento);
       const year = dateB.getFullYear();
-      const month = dateB.getMonth() + 1;
-      const day = dateB.getDate();
+      const month = (dateB.getMonth() + 1).toString().padStart(2, "0");
+      const day = (dateB.getDate() + 1).toString().padStart(2, "0");
       const formatted = `${year}-${month}-${day}`;
 
       document.getElementById("tipoDocumento").value = data.tipoDocumento;

@@ -14,20 +14,19 @@ user_db_config = {
     "database": "gestion_usuarios",
 }
 
-""" log_db_config = {
-    "host": "localhost",
+log_db_config = {
+    "host": "db",
     "user": "root",
-    "password": "14062003",
     "database": "gestion_usuarios",
-} """
+}
 
 
 def get_user_db_connection():
     return mysql.connector.connect(**user_db_config)
 
 
-""" def get_log_db_connection():
-    return mysql.connector.connect(**log_db_config) """
+def get_log_db_connection():
+    return mysql.connector.connect(**log_db_config)
 
 
 @update.route("/read_users/<int:id_usuario>", methods=["GET"])
@@ -55,21 +54,24 @@ def obtener_usuario_por_id(id_usuario):
 @update.route("/update_users/<int:user_id>", methods=["POST"])
 def update_user(user_id):
     try:
-        connection = get_user_db_connection()
-        cursor = connection.cursor()
+        connection_user = get_user_db_connection()
+        cursor_user = connection_user.cursor()
+
+        connection_log = get_log_db_connection()
+        cursor_log = connection_log.cursor()
 
         data = request.get_json()
 
-        cursor.execute(
+        cursor_user.execute(
             "SELECT * FROM usuarios WHERE noDocumento = %s AND estado = 'A'",
             (data["noDocumento"],),
         )
-        existing_user = cursor.fetchone()
+        existing_user = cursor_user.fetchone()
 
         if not existing_user:
             return jsonify({"error": "No existe el usuario"}), 400
 
-        cursor.execute(
+        cursor_user.execute(
             """UPDATE usuarios
                 SET estado = 'P'
                 WHERE (noDocumento = %s) and (estado = 'A');""",
@@ -81,7 +83,7 @@ def update_user(user_id):
         fecha_hora_actual = datetime.now()
         fecha_formateada = fecha_hora_actual.strftime("%Y-%m-%d %H:%M:%S")
 
-        cursor.execute(
+        cursor_user.execute(
             insert_query,
             (
                 data["tipoDocumento"],
@@ -98,36 +100,31 @@ def update_user(user_id):
             ),
         )
 
-        connection.commit()
+        usuario = (data["firstName"]) + " " + (data["apellidos"])
+        accion = "Se actualizo el usuario"
+
+        query = "INSERT INTO logz (noDocumento, usuario, accion, fechaAccion, tipoDocumento) VALUES (%s, %s, %s, %s, %s)"
+        cursor_log.execute(
+            query,
+            (
+                data["noDocumento"],
+                usuario,
+                accion,
+                fecha_formateada,
+                data["tipoDocumento"],
+            ),
+        )
+
+        connection_user.commit()
+        connection_log.commit()
         return jsonify({"mensaje": "Usuario actualizado correctamente"})
     except Exception as e:
         return jsonify({"error": str(e)})
     finally:
-        cursor.close()
-        connection.close()
-
-
-""" @update.route("/logs", methods=["POST"])
-def add_log():
-    try:
-        connection = get_log_db_connection()
-        cursor = connection.cursor()
-
-        data = request.get_json()
-
-        query = "INSERT INTO logz (noDocumento, usuario, accion, fechaAccion) VALUES (%s, %s, %s, %s)"
-        cursor.execute(
-            query,
-            (data["noDocumento"], data["usuario"], data["accion"], data["fechaAccion"]),
-        )
-
-        connection.commit()
-        return jsonify({"mensaje": "Entrada de log agregada correctamente"})
-    except Exception as e:
-        return jsonify({"error": str(e)})
-    finally:
-        cursor.close()
-        connection.close() """
+        cursor_user.close()
+        connection_user.close()
+        cursor_log.close()
+        connection_log.close()
 
 
 if __name__ == "__main__":

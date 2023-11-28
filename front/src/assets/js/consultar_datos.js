@@ -12,9 +12,10 @@ window.addEventListener("load", async function () {
     })
     .then((data) => {
       const dateB = new Date(data.fechaNacimiento);
+      console.log(data.fechaNacimiento);
       const year = dateB.getFullYear();
-      const month = dateB.getMonth() + 1;
-      const day = dateB.getDate();
+      const month = (dateB.getMonth() + 1).toString().padStart(2, "0");
+      const day = (dateB.getDate() + 1).toString().padStart(2, "0");
       const formatted = `${year}-${month}-${day}`;
 
       console.log(formatted);
@@ -31,4 +32,32 @@ window.addEventListener("load", async function () {
       document.getElementById("foto").value = data.foto;
     })
     .catch((error) => console.error("Error:", error));
+  const myForm = document.getElementById("myForm");
+
+  const data = {};
+
+  for (let element of myForm.elements) {
+    if (element.name) {
+      data[element.name] = element.value;
+    }
+  }
+
+  // data tendrá los valores del formulario
+  console.log(data);
+
+  fetch("http://localhost:5001/logs", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      // Manejar la respuesta del servidor
+      console.log(data);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 });
