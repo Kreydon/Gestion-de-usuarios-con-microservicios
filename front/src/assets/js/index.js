@@ -30,13 +30,10 @@ createButton.addEventListener("click", function () {
     });
 });
 
-// BOTÓN LOGS
 const showLogsButton = document.getElementById("showLogs");
 
-// Agrega un event listener para el evento 'click'
 showLogsButton.addEventListener("click", function () {
-  // Realiza una solicitud GET al endpoint /logs
-  fetch('http://localhost:5000/logs') // Asegúrate de usar el puerto correcto
+  fetch('http://localhost:5000/logs')
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -44,14 +41,12 @@ showLogsButton.addEventListener("click", function () {
       return response.json();
     })
     .then(logs => {
-      // Crear y mostrar la ventana emergente con los logs
       createLogsPopup(logs);
     })
     .catch(e => {
       console.error('Error al obtener los logs:', e);
     });
 });
-// BOTÓN LOGS
 
 function createLogsPopup(logs) {
   const popup = document.createElement('div');
