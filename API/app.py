@@ -19,54 +19,6 @@ log_db_config = {
     "database": "gestion_usuarios",  # Update with your actual log database name
 }
 
-# BOTÓN LOGS
-const showLogsButton = document.getElementById("showLogs");
-
-// Agrega un event listener para el evento 'click'
-showLogsButton.addEventListener("click", function () {
-  // Realiza una solicitud GET al endpoint /logs
-  fetch('http://localhost:5000/logs') // Asegúrate de usar el puerto correcto
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(logs => {
-      // Crear y mostrar la ventana emergente con los logs
-      createLogsPopup(logs);
-    })
-    .catch(e => {
-      console.error('Error al obtener los logs:', e);
-    });
-});
-
-// Función para crear la ventana emergente y mostrar los logs
-function createLogsPopup(logs) {
-  // Crear la ventana emergente
-  const popup = document.createElement('div');
-  popup.classList.add('popup');
-  popup.innerHTML = '<h2>Logs de Registro</h2><div class="logs-container"></div><button class="close-btn">Cerrar</button>';
-
-  // Agregar los logs a la ventana emergente
-  const logsContainer = popup.querySelector('.logs-container');
-  logs.forEach(log => {
-    const logEntry = document.createElement('p');
-    logEntry.textContent = `Documento: ${log.noDocumento}, Usuario: ${log.usuario}, Acción: ${log.accion}, Fecha: ${log.fechaAccion}`;
-    logsContainer.appendChild(logEntry);
-  });
-
-  // Agregar la funcionalidad del botón cerrar
-  const closeBtn = popup.querySelector('.close-btn');
-  closeBtn.addEventListener('click', () => {
-    document.body.removeChild(popup);
-  });
-
-  // Añadir la ventana emergente al cuerpo del documento
-  document.body.appendChild(popup);
-}
-# FIN BOTÓN LOGS
-
 # Function to get a database connection for user management
 def get_user_db_connection():
     return mysql.connector.connect(**user_db_config)
