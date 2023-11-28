@@ -7,7 +7,6 @@ services:
     ports:
       - "3307:3306"
     command: --default-authentication-plugin=mysql_native_password --init-file /docker-entrypoint-initdb.d/init.sql
-    restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
       MYSQL_DATABASE: gestion_usuarios
@@ -15,7 +14,7 @@ services:
       - db-data:/var/lib/mysql
       - ./db:/docker-entrypoint-initdb.d
     networks:
-      - red-gestion
+      - gestion
 
   adminer:
     image: adminer
@@ -23,11 +22,58 @@ services:
     ports:
       - 8080:8080
     networks:
-      - red-gestion
+      - gestion
 
-networks:
-  red-gestion:
-    driver: bridge
+  create:
+    container_name: create
+    build:
+      context: ./crud
+      dockerfile: Dockerfile-create
+    ports:
+      - "5000:5000"
+    links:
+      - db
+    networks:
+      - gestion
+  read:
+    container_name: read
+    build:
+      context: ./crud
+      dockerfile: Dockerfile-read
+    ports:
+      - "5001:5001"
+    links:
+      - db
+    networks:
+      - gestion
+
+  update:
+    container_name: update
+    build:
+      context: ./crud
+      dockerfile: Dockerfile-update
+    ports:
+      - "5002:5002"
+    links:
+      - db
+    networks:
+      - gestion
+
+  delete:
+    container_name: delete
+    build:
+      context: ./crud
+      dockerfile: Dockerfile-delete
+    ports:
+      - "5003:5003"
+    links:
+      - db
+    networks:
+      - gestion
 
 volumes:
   db-data:
+
+networks:
+  gestion:
+    driver: bridge

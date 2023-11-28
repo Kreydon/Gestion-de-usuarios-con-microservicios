@@ -1,0 +1,11 @@
+FROM python:3.10
+
+WORKDIR /app
+
+COPY ./update.py /app
+
+RUN pip install Flask Flask-CORS Flask-Restful mysql-connector-python
+
+EXPOSE 5002
+
+CMD ["python", "update.py"]

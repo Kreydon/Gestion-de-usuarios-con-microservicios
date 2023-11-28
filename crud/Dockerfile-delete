@@ -1,0 +1,11 @@
+FROM python:3.10
+
+WORKDIR /app
+
+COPY ./delete.py /app
+
+RUN pip install Flask Flask-CORS Flask-Restful mysql-connector-python
+
+EXPOSE 5003
+
+CMD ["python", "delete.py"]

@@ -8,6 +8,12 @@ from flask_cors import CORS
 create = Flask(__name__)
 CORS(create)
 
+""" user_db_config = {
+    "host": "db",
+    "user": "root",
+    "database": "gestion_usuarios",
+} """
+
 user_db_config = {
     "host": "localhost",
     "user": "root",
@@ -15,20 +21,20 @@ user_db_config = {
     "database": "gestion_usuarios",
 }
 
-log_db_config = {
+""" log_db_config = {
     "host": "localhost",
     "user": "root",
     "password": "14062003",
     "database": "gestion_usuarios",
-}
+} """
 
 
 def get_user_db_connection():
     return mysql.connector.connect(**user_db_config)
 
 
-def get_log_db_connection():
-    return mysql.connector.connect(**log_db_config)
+""" def get_log_db_connection():
+    return mysql.connector.connect(**log_db_config) """
 
 
 @create.route("/create_users", methods=["POST"])
@@ -82,7 +88,7 @@ def agregar_usuario():
         connection.close()
 
 
-@create.route("/logs", methods=["POST"])
+""" @create.route("/logs", methods=["POST"])
 def add_log():
     try:
         connection = get_log_db_connection()
@@ -102,8 +108,8 @@ def add_log():
         return jsonify({"error": str(e)})
     finally:
         cursor.close()
-        connection.close()
+        connection.close() """
 
 
 if __name__ == "__main__":
-    create.run(debug=True)
+    create.run(debug=True, host="0.0.0.0")
