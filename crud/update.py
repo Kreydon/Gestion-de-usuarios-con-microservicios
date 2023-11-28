@@ -30,6 +30,28 @@ def get_user_db_connection():
     return mysql.connector.connect(**log_db_config) """
 
 
+@update.route("/read_users/<int:id_usuario>", methods=["GET"])
+def obtener_usuario_por_id(id_usuario):
+    try:
+        connection = get_user_db_connection()
+        cursor = connection.cursor(dictionary=True)
+        query = """SELECT tipoDocumento, noDocumento, firstName, secondName, apellidos, fechaNacimiento, genero, correoElectronico, celular, foto
+                   FROM usuarios
+                   WHERE (noDocumento=%s) AND (estado = 'A');"""
+        cursor.execute(query, (id_usuario,))
+        usuario = cursor.fetchone()
+
+        if usuario:
+            return jsonify(usuario)
+        else:
+            return jsonify({"mensaje": "Usuario no encontrado"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    finally:
+        cursor.close()
+        connection.close()
+
+
 @update.route("/update_users/<int:user_id>", methods=["POST"])
 def update_user(user_id):
     try:
