@@ -61,18 +61,20 @@ def add_log():
         fecha_hora_actual = datetime.now()
         fecha_formateada = fecha_hora_actual.strftime("%Y-%m-%d %H:%M:%S")
 
-        usuario = (datos["firstName"]) + " " + (datos["apellidos"])
+        usuario = (datos["firstName"]) + " " + (
+            datos["apellidos"]
+        ) or "usuario desconocido"
         accion = "Se consulto el usuario"
 
         query = "INSERT INTO logz (noDocumento, usuario, accion, fechaAccion, tipoDocumento) VALUES (%s, %s, %s, %s, %s)"
         cursor_log.execute(
             query,
             (
-                datos["noDocumento"],
+                datos["noDocumento"] or 123456,
                 usuario,
                 accion,
                 fecha_formateada,
-                datos["tipoDocumento"],
+                datos["tipoDocumento"] or "Cedula",
             ),
         )
 
