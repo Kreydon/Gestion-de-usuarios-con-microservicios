@@ -30,6 +30,49 @@ createButton.addEventListener("click", function () {
     });
 });
 
+# BOTÓN LOGS
+const showLogsButton = document.getElementById("showLogs");
+
+// Agrega un event listener para el evento 'click'
+showLogsButton.addEventListener("click", function () {
+  // Realiza una solicitud GET al endpoint /logs
+  fetch('http://localhost:5000/logs') // Asegúrate de usar el puerto correcto
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(logs => {
+      // Crear y mostrar la ventana emergente con los logs
+      createLogsPopup(logs);
+    })
+    .catch(e => {
+      console.error('Error al obtener los logs:', e);
+    });
+});
+
+// BOTÓN LOGS
+function createLogsPopup(logs) {
+  const popup = document.createElement('div');
+  popup.classList.add('popup');
+  popup.innerHTML = '<h2>Logs de Registro</h2><div class="logs-container"></div><button class="close-btn">Cerrar</button>';
+
+  const logsContainer = popup.querySelector('.logs-container');
+  logs.forEach(log => {
+    const logEntry = document.createElement('p');
+    logEntry.textContent = `Documento: ${log.noDocumento}, Usuario: ${log.usuario}, Acción: ${log.accion}, Fecha: ${log.fechaAccion}`;
+    logsContainer.appendChild(logEntry);
+  });
+  const closeBtn = popup.querySelector('.close-btn');
+  closeBtn.addEventListener('click', () => {
+    document.body.removeChild(popup);
+  });
+
+  document.body.appendChild(popup);
+}
+// FIN BOTÓN LOGS
+
 readButton.addEventListener("click", function () {
   popupTitle = "Ingrese el documento del usuario que desee consultar: ";
   btnAccion = "Consultar usuario";
