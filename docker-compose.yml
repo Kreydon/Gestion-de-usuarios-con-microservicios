@@ -72,6 +72,18 @@ services:
     networks:
       - gestion
 
+  logs:
+    container_name: logs
+    build:
+      context: ./crud
+      dockerfile: Dockerfile-logz
+    ports:
+      - "5004:5004"
+    links:
+      - db
+    networks:
+      - gestion
+
 volumes:
   db-data:
 
