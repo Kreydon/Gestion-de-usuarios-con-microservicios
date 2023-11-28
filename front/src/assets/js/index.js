@@ -119,5 +119,29 @@ document.querySelector(".popup #accion").addEventListener("click", function () {
         // Capturar y manejar cualquier error que ocurra durante la solicitud
         console.error("Error en la solicitud:", error);
       });
+
+    fetch(`http://localhost:5003/logs/${noDocumento}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ noDocumento: noDocumento }),
+    })
+      .then((response) => {
+        // Verificar si la respuesta fue exitosa (código de estado en el rango 200-299)
+        if (!response.ok) {
+          throw new Error(
+            `Error en la solicitud: ${response.status} ${response.statusText}`
+          );
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Manejar la respuesta del servidor
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   }
 });

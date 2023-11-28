@@ -34,9 +34,6 @@ def delete_user(user_id):
         connection_user = get_user_db_connection()
         cursor_user = connection_user.cursor()
 
-        connection_log = get_log_db_connection()
-        cursor_log = connection_log.cursor()
-
         data = request.get_json()
 
         cursor_user.execute(
@@ -44,6 +41,7 @@ def delete_user(user_id):
             (data["noDocumento"],),
         )
         existing_user = cursor_user.fetchone()
+        print()
 
         if not existing_user:
             return jsonify({"error": "No existe el usuario"}), 400
@@ -53,32 +51,59 @@ def delete_user(user_id):
             (data["noDocumento"],),
         )
 
-        fecha_hora_actual = datetime.now()
-        fecha_formateada = fecha_hora_actual.strftime("%Y-%m-%d %H:%M:%S")
-
-        usuario = (data["firstName"]) + " " + (data["apellidos"])
-        accion = "Se elimino el usuario"
-
-        query = "INSERT INTO logz (noDocumento, usuario, accion, fechaAccion, tipoDocumento) VALUES (%s, %s, %s, %s, %s)"
-        cursor_log.execute(
-            query,
-            (
-                data["noDocumento"],
-                usuario,
-                accion,
-                fecha_formateada,
-                data["tipoDocumento"],
-            ),
-        )
-
         connection_user.commit()
-        connection_log.commit()
         return jsonify({"mensaje": "Usuario eliminado correctamente"})
     except Exception as e:
         return jsonify({"error": str(e)})
     finally:
         cursor_user.close()
         connection_user.close()
+
+
+@delete.route("/logs", methods=["POST"])
+def add_log():
+    try:
+        connection_log = get_log_db_connection()
+        cursor_log = connection_log.cursor()
+
+        connection_user = get_user_db_connection()
+        cursor_user = connection_user.cursor()
+
+        datos = request.get_json()
+
+        cursor_user.execute(
+            "SELECT firstName, apellidos, noDocumento, tipoDocumento FROM usuarios WHERE noDocumento = %s AND estado = 'A'",
+            (datos["noDocumento"],),
+        )
+        print(datos["noDocumento"])
+
+        user = cursor_user.fetchone()
+
+        print(user)
+
+        fecha_hora_actual = datetime.now()
+        fecha_formateada = fecha_hora_actual.strftime("%Y-%m-%d %H:%M:%S")
+
+        usuario = (user[0]) + " " + (user[1])
+        accion = "Se elimino el usuario"
+
+        query = "INSERT INTO logz (noDocumento, usuario, accion, fechaAccion, tipoDocumento) VALUES (%s, %s, %s, %s, %s)"
+        cursor_log.execute(
+            query,
+            (
+                user[2],
+                usuario,
+                accion,
+                fecha_formateada,
+                user[3],
+            ),
+        )
+
+        connection_log.commit()
+        return jsonify({"mensaje": "Entrada de log agregada correctamente"})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    finally:
         cursor_log.close()
         connection_log.close()
 
