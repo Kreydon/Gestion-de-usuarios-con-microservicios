@@ -30,38 +30,20 @@ createButton.addEventListener("click", function () {
     });
 });
 
-// BOTÓN LOGS
-const showLogsButton = document.getElementById("view-logs");
-
-showLogsButton.addEventListener("click", function () {
-  fetch('http://localhost:5000/logs')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(logs => {
-      createLogsPopup(logs);
-    })
-    .catch(e => {
-      console.error('Error al obtener los logs:', e);
-    });
-});
-
 function createLogsPopup(logs) {
-  const popup = document.createElement('div');
-  popup.classList.add('popup');
-  popup.innerHTML = '<h2>Logs de Registro</h2><div class="logs-container"></div><button class="close-btn">Cerrar</button>';
+  const popup = document.createElement("div");
+  popup.classList.add("popup");
+  popup.innerHTML =
+    '<h2>Logs de Registro</h2><div class="logs-container"></div><button class="close-btn">Cerrar</button>';
 
-  const logsContainer = popup.querySelector('.logs-container');
-  logs.forEach(log => {
-    const logEntry = document.createElement('p');
+  const logsContainer = popup.querySelector(".logs-container");
+  logs.forEach((log) => {
+    const logEntry = document.createElement("p");
     logEntry.textContent = `Documento: ${log.noDocumento}, Usuario: ${log.usuario}, Acción: ${log.accion}, Fecha: ${log.fechaAccion}`;
     logsContainer.appendChild(logEntry);
   });
-  const closeBtn = popup.querySelector('.close-btn');
-  closeBtn.addEventListener('click', () => {
+  const closeBtn = popup.querySelector(".close-btn");
+  closeBtn.addEventListener("click", () => {
     document.body.removeChild(popup);
   });
 
@@ -106,9 +88,13 @@ document.querySelector(".popup #accion").addEventListener("click", function () {
       .then((response) => {
         // Verificar si la respuesta fue exitosa (código de estado en el rango 200-299)
         if (!response.ok) {
-          throw new Error(
-            `Error en la solicitud: ${response.status} ${response.statusText}`
-          );
+          if (response.status === 404) {
+            alert("Usuario no encontrado");
+          } else {
+            throw new Error(
+              `Error en la solicitud: ${response.status} ${response.statusText}`
+            );
+          }
         }
         return response.json();
       })
@@ -139,9 +125,13 @@ document.querySelector(".popup #accion").addEventListener("click", function () {
       .then((response) => {
         // Verificar si la respuesta fue exitosa (código de estado en el rango 200-299)
         if (!response.ok) {
-          throw new Error(
-            `Error en la solicitud: ${response.status} ${response.statusText}`
-          );
+          if (response.status === 404) {
+            alert("Usuario no encontrado");
+          } else {
+            throw new Error(
+              `Error en la solicitud: ${response.status} ${response.statusText}`
+            );
+          }
         }
         return response.json();
       })
@@ -176,8 +166,14 @@ document.querySelector(".popup #accion").addEventListener("click", function () {
     })
       .then((response) => {
         // Verificar si la respuesta fue exitosa (código de estado en el rango 200-299)
-        if (!response.ok && response.status === 0) {
-          throw new Error("Error de conexión con la API");
+        if (!response.ok) {
+          if (response.status === 404) {
+            alert("Usuario no encontrado");
+          } else {
+            throw new Error(
+              `Error en la solicitud: ${response.status} ${response.statusText}`
+            );
+          }
         }
         return response.json();
       })

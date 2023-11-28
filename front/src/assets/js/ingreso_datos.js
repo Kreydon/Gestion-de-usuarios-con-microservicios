@@ -76,6 +76,7 @@ document.getElementById("myForm").addEventListener("submit", function (e) {
     .then((data) => {
       // Manejar la respuesta del servidor
       console.log(data);
+      alert("Se creo el usuario con exito");
     })
     .catch((error) => {
       console.error("Error:", error);
